@@ -1,4 +1,4 @@
-import { Mission, MoodType } from "@/types";
+import { HungerNeed, Mission, MoodType } from "@/types";
 import { MISSION_SYSTEM_PROMPT, buildMissionPrompt } from "@/constants/prompts";
 import { MOCK_HUNGER_FEED } from "@/constants/mockHungerFeed";
 
@@ -11,12 +11,14 @@ interface OpenAIMissionResponse {
 
 export async function generateMission(
   mood: MoodType,
-  gladnessDrivers: string[]
+  gladnessDrivers: string[],
+  needs?: HungerNeed[]
 ): Promise<Mission> {
   const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
-  // Pick 3 random needs from the mock feed
-  const shuffled = [...MOCK_HUNGER_FEED].sort(() => Math.random() - 0.5);
+  const sourceNeeds =
+    needs && needs.length > 0 ? needs : MOCK_HUNGER_FEED;
+  const shuffled = [...sourceNeeds].sort(() => Math.random() - 0.5);
   const selectedNeeds = shuffled.slice(0, 3);
 
   const userPrompt = buildMissionPrompt(
@@ -82,7 +84,7 @@ export async function generateMission(
 function getFallbackMission(
   mood: MoodType,
   drivers: string[],
-  needs: typeof MOCK_HUNGER_FEED
+  needs: HungerNeed[]
 ): OpenAIMissionResponse {
   if (mood === "anxious") {
     return {
@@ -95,6 +97,14 @@ function getFallbackMission(
   }
 
   const need = needs[0];
+  if (!need) {
+    return {
+      title: "Answer the Call",
+      description: `Take 15 minutes to offer your gifts of ${drivers.slice(0, 2).join(" and ")} somewhere on campus where you notice a need.`,
+      location: "Campus",
+      estimatedMinutes: 15,
+    };
+  }
   return {
     title: "Answer the Call",
     description: `${need.description}. Head to ${need.location} and offer 15 minutes of your time. Your gifts of ${drivers.slice(0, 2).join(" and ")} are exactly what's needed right now.`,

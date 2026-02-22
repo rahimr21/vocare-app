@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SubmittedNeed } from "@/types";
-import { getItem, setItem, KEYS } from "@/lib/storage";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
 import CategoryChip from "@/components/ui/CategoryChip";
@@ -23,6 +23,7 @@ const CATEGORIES = [
 ];
 
 export default function ReportScreen() {
+  const { user } = useAuth();
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState<
@@ -43,21 +44,24 @@ export default function ReportScreen() {
       Alert.alert("Required", "Please select a category");
       return;
     }
+    if (!user?.id) {
+      Alert.alert("Sign in required", "Please sign in to submit a need.");
+      return;
+    }
 
     setLoading(true);
-    const newNeed: SubmittedNeed = {
-      id: Date.now().toString(),
+    const { error } = await supabase.from("hunger_feed").insert({
+      user_id: user.id,
       description: description.trim(),
       location: location.trim(),
       category,
-      createdAt: new Date().toISOString(),
-    };
-
-    const existing =
-      (await getItem<SubmittedNeed[]>(KEYS.SUBMITTED_NEEDS)) || [];
-    await setItem(KEYS.SUBMITTED_NEEDS, [newNeed, ...existing]);
+    });
 
     setLoading(false);
+    if (error) {
+      Alert.alert("Submission failed", error.message);
+      return;
+    }
     setDescription("");
     setLocation("");
     setCategory(null);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,39 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { useMission } from "@/context/MissionContext";
+import { fetchHungerFeed } from "@/lib/hungerFeed";
 import { MOODS } from "@/constants/moods";
-import { MoodType } from "@/types";
+import { HungerNeed, MoodType } from "@/types";
 import MoodButton from "@/components/ui/MoodButton";
 import Card from "@/components/ui/Card";
 
 export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
+  const [hungerFeed, setHungerFeed] = useState<HungerNeed[] | null>(null);
+  const [feedError, setFeedError] = useState<string | null>(null);
   const { user } = useAuth();
   const { profile } = useUserProfile();
   const { currentMission, missionHistory, generating, generateMission } = useMission();
   const router = useRouter();
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setFeedError(null);
+      try {
+        const needs = await fetchHungerFeed();
+        if (!cancelled) setHungerFeed(needs);
+      } catch (e) {
+        if (!cancelled) {
+          setHungerFeed([]);
+          setFeedError(e instanceof Error ? e.message : "Failed to load needs");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -163,6 +185,58 @@ export default function HomeScreen() {
               </View>
             )}
           </Card>
+
+          {/* Community needs feed */}
+          <Text className="font-work-sans-semibold text-lg text-gray-900 mb-3">
+            Community Needs
+          </Text>
+          {hungerFeed === null ? (
+            <Card className="mb-6">
+              <View className="items-center py-6">
+                <ActivityIndicator size="small" color="#135bec" />
+                <Text className="font-work-sans text-sm text-gray-500 mt-2">
+                  Loading needs...
+                </Text>
+              </View>
+            </Card>
+          ) : feedError ? (
+            <Card className="mb-6">
+              <Text className="font-work-sans text-sm text-gray-500 text-center">
+                {feedError}
+              </Text>
+            </Card>
+          ) : hungerFeed.length === 0 ? (
+            <Card className="mb-6">
+              <Text className="font-work-sans text-sm text-gray-500 text-center">
+                No needs yet — submit one from the Report tab.
+              </Text>
+            </Card>
+          ) : (
+            <View className="mb-6">
+              {hungerFeed.slice(0, 5).map((need) => (
+                <Card key={need.id} className="mb-3">
+                  <Text className="font-work-sans text-gray-900 text-sm">
+                    {need.description}
+                  </Text>
+                  <View className="flex-row items-center mt-2">
+                    <MaterialCommunityIcons
+                      name="map-marker-outline"
+                      size={14}
+                      color="#6B7280"
+                    />
+                    <Text className="font-work-sans text-xs text-gray-500 ml-1">
+                      {need.location}
+                    </Text>
+                    <View className="bg-gray-100 rounded px-2 py-0.5 ml-2">
+                      <Text className="font-work-sans text-xs text-gray-600 capitalize">
+                        {need.category}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
+              ))}
+            </View>
+          )}
 
           {/* Quick stats */}
           <Text className="font-work-sans-semibold text-lg text-gray-900 mb-3">
