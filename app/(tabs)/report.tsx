@@ -103,7 +103,10 @@ export default function ReportScreen() {
         >
           <View className="px-6 pt-4">
             {/* Buechner Quote */}
-            <View className="bg-primary/5 rounded-2xl p-5 mb-6">
+            <View
+              className="bg-primary/5 rounded-2xl p-5 mb-6"
+              style={{ borderWidth: 1, borderColor: "rgba(74, 107, 90, 0.28)" }}
+            >
               <MaterialCommunityIcons
                 name="format-quote-open"
                 size={24}
@@ -132,7 +135,10 @@ export default function ReportScreen() {
             <Text className="font-work-sans-medium text-sm text-gray-600 mb-1.5">
               What's the need?
             </Text>
-            <View className="bg-stone-100 rounded-xl p-4 mb-1">
+            <View
+              className="bg-stone-100 rounded-xl p-4 mb-1"
+              style={{ borderWidth: 1, borderColor: "rgba(74, 107, 90, 0.28)" }}
+            >
               <RNTextInput
                 className="font-work-sans text-base text-gray-900 min-h-[100px]"
                 placeholder="Describe the need you've observed..."
