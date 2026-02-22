@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useMission } from "@/context/MissionContext";
 import ScrollCard from "@/components/mission/ScrollCard";
 import Button from "@/components/ui/Button";
@@ -40,27 +41,37 @@ export default function MissionRevealScreen() {
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
-        <View className="flex-1 justify-center px-2">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingVertical: 24, paddingHorizontal: 8 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Top text */}
-          <Text className="font-work-sans text-white/50 text-sm text-center uppercase tracking-widest mb-4">
-            Your Mission
-          </Text>
-          <Text className="font-work-sans-bold text-2xl text-white text-center mb-4">
-            A Call Has Arrived
-          </Text>
+          <Animated.View entering={FadeIn.duration(400)}>
+            <Text className="font-work-sans text-white/50 text-sm text-center uppercase tracking-widest mb-4">
+              Your Mission
+            </Text>
+            <Text className="font-work-sans-bold text-2xl text-white text-center mb-4">
+              A Call Has Arrived
+            </Text>
+          </Animated.View>
 
           {/* Personal note */}
           {currentMission.personalNote ? (
-            <Text className="font-work-sans text-white/70 text-sm text-center italic mb-6 px-4 leading-5">
-              {currentMission.personalNote}
-            </Text>
+            <Animated.View entering={FadeIn.delay(150).duration(400)} className="mb-6 px-4">
+              <Text className="font-work-sans text-white/70 text-sm text-center italic leading-5">
+                {currentMission.personalNote}
+              </Text>
+            </Animated.View>
           ) : null}
 
-          {/* Parchment scroll card */}
-          <ScrollCard mission={currentMission} />
+          {/* Parchment scroll card - grows with content */}
+          <Animated.View entering={FadeInDown.delay(250).duration(450)}>
+            <ScrollCard mission={currentMission} />
+          </Animated.View>
 
           {/* Actions */}
-          <View className="px-6 mt-8">
+          <Animated.View entering={FadeIn.delay(400).duration(400)} className="px-6 mt-8">
             <Button
               title="ACCEPT THE CALL"
               variant="gold"
@@ -72,8 +83,8 @@ export default function MissionRevealScreen() {
                 Save to discern later
               </Text>
             </TouchableOpacity>
-          </View>
-        </View>
+          </Animated.View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

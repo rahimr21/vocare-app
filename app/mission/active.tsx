@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useMission } from "@/context/MissionContext";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -35,20 +36,19 @@ export default function ActiveMissionScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="px-6 pt-4">
-          {/* Header */}
-          <View className="flex-row items-center mb-6">
-            <StatusBadge label="In Progress" variant="active" />
-          </View>
+          <Animated.View entering={FadeIn.duration(400)}>
+            <View className="flex-row items-center mb-6">
+              <StatusBadge label="In Progress" variant="active" />
+            </View>
+            <Text className="font-work-sans-bold text-2xl text-gray-900 mb-2">
+              {currentMission.title}
+            </Text>
+            <Text className="font-work-sans text-gray-500 text-sm mb-6">
+              Accepted just now
+            </Text>
+          </Animated.View>
 
-          {/* Mission title */}
-          <Text className="font-work-sans-bold text-2xl text-gray-900 mb-2">
-            {currentMission.title}
-          </Text>
-          <Text className="font-work-sans text-gray-500 text-sm mb-6">
-            Accepted just now
-          </Text>
-
-          {/* Detail card */}
+          <Animated.View entering={FadeInDown.delay(100).duration(400)}>
           <Card className="mb-6">
             <View className="flex-row items-center mb-4">
               <View className="bg-primary/10 rounded-full p-2 mr-3">
@@ -109,6 +109,7 @@ export default function ActiveMissionScreen() {
               </Text>
             </View>
           </Card>
+          </Animated.View>
         </View>
       </ScrollView>
 

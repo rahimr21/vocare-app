@@ -9,6 +9,7 @@ import {
 import { useRouter, useLocalSearchParams, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { MoodType } from "@/types";
 import { fetchHungerFeed } from "@/lib/hungerFeed";
 import { HungerNeed } from "@/types";
@@ -60,14 +61,16 @@ export default function ChooseTaskScreen() {
           contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 48 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text className="font-work-sans-bold text-xl text-gray-900 mb-1">
-            {MOOD_LABELS[mood] ?? `You're feeling ${mood}`}
-          </Text>
-          <Text className="font-work-sans text-sm text-gray-500 mb-6">
+          <Animated.View entering={FadeIn.duration(400)}>
+            <Text className="font-work-sans-bold text-xl text-gray-900 mb-1">
+              {MOOD_LABELS[mood] ?? `You're feeling ${mood}`}
+            </Text>
+            <Text className="font-work-sans text-sm text-gray-500 mb-6">
             {hasNeeds
               ? "Pick a task to help with, or we can generate a personal mission for you."
-              : "No community tasks right now — we'll generate a personal mission for you."}
-          </Text>
+              :             "No community tasks right now — we'll generate a personal mission for you."}
+            </Text>
+          </Animated.View>
 
           {loading ? (
             <View className="py-8 items-center">
@@ -75,9 +78,9 @@ export default function ChooseTaskScreen() {
             </View>
           ) : hasNeeds ? (
             <View className="mb-6">
-              {displayNeeds.map((need) => (
+              {displayNeeds.map((need, index) => (
+                <Animated.View key={need.id} entering={FadeInDown.delay(80 * index).duration(350)}>
                 <TouchableOpacity
-                  key={need.id}
                   onPress={() => handlePickNeed(need)}
                   activeOpacity={0.7}
                 >
@@ -114,10 +117,12 @@ export default function ChooseTaskScreen() {
                     </View>
                   </Card>
                 </TouchableOpacity>
+                </Animated.View>
               ))}
             </View>
           ) : null}
 
+          <Animated.View entering={FadeIn.delay(300).duration(400)}>
           <TouchableOpacity
             onPress={handleGenerateMission}
             className="rounded-xl py-4 items-center"
@@ -127,6 +132,7 @@ export default function ChooseTaskScreen() {
               {hasNeeds ? "Or generate a personal mission for me" : "Generate a mission for me"}
             </Text>
           </TouchableOpacity>
+          </Animated.View>
         </ScrollView>
       </SafeAreaView>
     </>
