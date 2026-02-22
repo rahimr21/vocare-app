@@ -10,7 +10,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="constellation" />
+      <Tabs.Screen name="growth" />
       <Tabs.Screen name="report" />
     </Tabs>
   );

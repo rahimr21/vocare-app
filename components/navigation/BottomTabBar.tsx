@@ -6,13 +6,13 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 const TAB_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
   index: "home",
-  constellation: "star-four-points",
+  growth: "tree",
   report: "hand-heart",
 };
 
 const TAB_LABELS: Record<string, string> = {
   index: "Home",
-  constellation: "Stars",
+  growth: "Growth",
   report: "Report",
 };
 

@@ -76,11 +76,11 @@ export interface SubmittedNeed {
   createdAt: string;
 }
 
-export interface ConstellationStar {
+export interface TreeLeaf {
   id: string;
   missionId: string;
   x: number;
   y: number;
-  brightness: number; // 1.0 = consolation (felt alive), 0.4 = desolation
+  leafState: "vibrant" | "faded"; // vibrant = felt alive, faded = desolation
   label: string;
 }

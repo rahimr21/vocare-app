@@ -56,8 +56,8 @@ export default function WelcomeScreen() {
               text: "Receive AI-powered micro-missions",
             },
             {
-              icon: "star-four-points" as const,
-              text: "Build your Purpose Constellation",
+              icon: "tree" as const,
+              text: "Grow your Purpose Tree",
             },
           ].map((item, i) => (
             <View key={i} className="flex-row items-center px-4 mb-3">

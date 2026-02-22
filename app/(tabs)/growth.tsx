@@ -12,10 +12,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMission } from "@/context/MissionContext";
 import { Mission } from "@/types";
-import ConstellationMap from "@/components/mission/ConstellationMap";
-import Card from "@/components/ui/Card";
+import GrowthTree from "@/components/mission/GrowthTree";
 
-export default function ConstellationScreen() {
+export default function GrowthScreen() {
   const { missionHistory } = useMission();
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
 
@@ -27,7 +26,7 @@ export default function ConstellationScreen() {
 
   return (
     <LinearGradient
-      colors={["#101622", "#0d1b2e", "#080e18"]}
+      colors={["#f0f4e8", "#e8eed8", "#dde5cd"]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
@@ -37,44 +36,53 @@ export default function ConstellationScreen() {
         >
           <View className="px-6 pt-4">
             {/* Header */}
-            <Text className="font-playfair-bold text-2xl text-white mb-1">
-              Purpose Constellation
+            <Text className="font-playfair-bold text-2xl text-[#2d2418] mb-1">
+              Growth Tree
             </Text>
-            <Text className="font-work-sans text-white/50 text-sm mb-6">
-              Your journey mapped in stars
+            <Text className="font-work-sans text-[#5a4a3a]/80 text-sm mb-6">
+              Watch your purpose take root
             </Text>
 
-            {/* Star map */}
+            {/* Tree visualization */}
             <View className="items-center mb-6">
-              <ConstellationMap
+              <GrowthTree
                 missions={completedMissions}
-                onStarPress={setSelectedMission}
+                onLeafPress={setSelectedMission}
               />
             </View>
 
             {/* Stats row */}
             <View className="flex-row space-x-3 mb-6">
-              <View className="flex-1 bg-white/5 rounded-2xl p-4 mr-1.5">
-                <Text className="font-work-sans-bold text-2xl text-gold">
+              <View
+                className="flex-1 rounded-2xl p-4 mr-1.5"
+                style={{ backgroundColor: "rgba(76, 175, 80, 0.1)" }}
+              >
+                <Text className="font-work-sans-bold text-2xl text-[#2e7d32]">
                   {consolations.length}
                 </Text>
-                <Text className="font-work-sans text-white/50 text-xs">
+                <Text className="font-work-sans text-[#5a4a3a]/80 text-xs">
                   Consolations
                 </Text>
               </View>
-              <View className="flex-1 bg-white/5 rounded-2xl p-4 mx-0.5">
-                <Text className="font-work-sans-bold text-2xl text-white/60">
+              <View
+                className="flex-1 rounded-2xl p-4 mx-0.5"
+                style={{ backgroundColor: "rgba(184, 149, 106, 0.15)" }}
+              >
+                <Text className="font-work-sans-bold text-2xl text-[#8b6914]">
                   {desolations.length}
                 </Text>
-                <Text className="font-work-sans text-white/50 text-xs">
+                <Text className="font-work-sans text-[#5a4a3a]/80 text-xs">
                   Desolations
                 </Text>
               </View>
-              <View className="flex-1 bg-white/5 rounded-2xl p-4 ml-1.5">
-                <Text className="font-work-sans-bold text-2xl text-white">
+              <View
+                className="flex-1 rounded-2xl p-4 ml-1.5"
+                style={{ backgroundColor: "rgba(93, 117, 54, 0.12)" }}
+              >
+                <Text className="font-work-sans-bold text-2xl text-[#2d2418]">
                   {completedMissions.length}
                 </Text>
-                <Text className="font-work-sans text-white/50 text-xs">
+                <Text className="font-work-sans text-[#5a4a3a]/80 text-xs">
                   Total
                 </Text>
               </View>
@@ -83,15 +91,25 @@ export default function ConstellationScreen() {
             {/* Legend */}
             <View className="flex-row items-center justify-center space-x-6 mb-4">
               <View className="flex-row items-center">
-                <View className="w-3 h-3 rounded-full bg-gold mr-2" />
-                <Text className="font-work-sans text-white/60 text-xs">
+                <MaterialCommunityIcons
+                  name="leaf"
+                  size={18}
+                  color="#4CAF50"
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="font-work-sans text-[#5a4a3a]/90 text-xs">
                   Felt Alive
                 </Text>
               </View>
               <View className="w-4" />
               <View className="flex-row items-center">
-                <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
-                <Text className="font-work-sans text-white/60 text-xs">
+                <MaterialCommunityIcons
+                  name="leaf"
+                  size={18}
+                  color="#B8956A"
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="font-work-sans text-[#5a4a3a]/90 text-xs">
                   Desolation
                 </Text>
               </View>
@@ -100,7 +118,7 @@ export default function ConstellationScreen() {
         </ScrollView>
       </SafeAreaView>
 
-      {/* Star detail modal */}
+      {/* Leaf detail modal */}
       <Modal
         visible={!!selectedMission}
         transparent
@@ -108,46 +126,45 @@ export default function ConstellationScreen() {
         onRequestClose={() => setSelectedMission(null)}
       >
         <Pressable
-          className="flex-1 justify-end bg-black/60"
+          className="flex-1 justify-end bg-black/50"
           onPress={() => setSelectedMission(null)}
         >
           <Pressable onPress={() => {}}>
-            <View className="bg-bg-dark rounded-t-3xl px-6 pt-6 pb-10">
+            <View
+              className="rounded-t-3xl px-6 pt-6 pb-10"
+              style={{ backgroundColor: "#f5f0e8" }}
+            >
               {/* Handle bar */}
-              <View className="w-10 h-1 bg-white/20 rounded-full self-center mb-4" />
+              <View className="w-10 h-1 bg-[#5a4a3a]/30 rounded-full self-center mb-4" />
 
               {selectedMission && (
                 <>
                   <View className="flex-row items-center mb-3">
                     <MaterialCommunityIcons
-                      name={
-                        selectedMission.feltAlive
-                          ? "star-four-points"
-                          : "star-four-points-outline"
-                      }
+                      name="leaf"
                       size={20}
                       color={
-                        selectedMission.feltAlive ? "#D4AF37" : "#6B7280"
+                        selectedMission.feltAlive ? "#4CAF50" : "#B8956A"
                       }
                     />
-                    <Text className="font-work-sans-semibold text-white ml-2">
+                    <Text className="font-work-sans-semibold text-[#2d2418] ml-2">
                       {selectedMission.title}
                     </Text>
                   </View>
-                  <Text className="font-work-sans text-white/60 text-sm leading-5 mb-3">
+                  <Text className="font-work-sans text-[#5a4a3a]/90 text-sm leading-5 mb-3">
                     {selectedMission.description}
                   </Text>
                   <View className="flex-row items-center">
                     <MaterialCommunityIcons
                       name="map-marker-outline"
                       size={14}
-                      color="#9CA3AF"
+                      color="#5a4a3a"
                     />
-                    <Text className="font-work-sans text-white/40 text-xs ml-1">
+                    <Text className="font-work-sans text-[#5a4a3a]/70 text-xs ml-1">
                       {selectedMission.location}
                     </Text>
-                    <Text className="text-white/20 mx-2">·</Text>
-                    <Text className="font-work-sans text-white/40 text-xs">
+                    <Text className="text-[#5a4a3a]/40 mx-2">·</Text>
+                    <Text className="font-work-sans text-[#5a4a3a]/70 text-xs">
                       {selectedMission.feltAlive
                         ? "Felt Alive"
                         : "Desolation"}
@@ -158,9 +175,10 @@ export default function ConstellationScreen() {
 
               <TouchableOpacity
                 onPress={() => setSelectedMission(null)}
-                className="mt-5 py-3 bg-white/10 rounded-xl items-center"
+                className="mt-5 py-3 rounded-xl items-center"
+                style={{ backgroundColor: "rgba(93, 117, 54, 0.15)" }}
               >
-                <Text className="font-work-sans-medium text-white text-sm">
+                <Text className="font-work-sans-medium text-[#2d2418] text-sm">
                   Close
                 </Text>
               </TouchableOpacity>
