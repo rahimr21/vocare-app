@@ -4,6 +4,9 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useMission } from "@/context/MissionContext";
+import { theme } from "@/constants/theme";
+
+const gradientColors = [theme.primary, "#3d5a4c", "#2d4035"] as const;
 
 export default function MissionReflectionScreen() {
   const { recordReflection } = useMission();
@@ -21,7 +24,7 @@ export default function MissionReflectionScreen() {
 
   return (
     <LinearGradient
-      colors={["#166534", "#14532D", "#052e16"]}
+      colors={[...gradientColors]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1 justify-center items-center px-6">

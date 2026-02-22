@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { fetchHungerFeedWithMeta } from "@/lib/hungerFeed";
 import { HungerNeedWithMeta } from "@/types";
 import Card from "@/components/ui/Card";
+import { theme } from "@/constants/theme";
 
 export default function NeedsScreen() {
   const [needs, setNeeds] = useState<HungerNeedWithMeta[] | null>(null);
@@ -55,7 +56,7 @@ export default function NeedsScreen() {
           {needs === null ? (
             <Card className="mb-4">
               <View className="items-center py-8">
-                <ActivityIndicator size="small" color="#22C55E" />
+                <ActivityIndicator size="small" color={theme.primary} />
                 <Text className="font-work-sans text-sm text-gray-500 mt-3">
                   Loading needs...
                 </Text>

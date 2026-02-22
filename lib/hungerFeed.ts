@@ -140,6 +140,51 @@ export async function getNeedById(
 }
 
 /**
+ * Fetches needs that the current user has accepted (both open and filled).
+ * Used for "Tasks for others" on the home screen.
+ */
+export async function fetchMyAcceptedNeeds(
+  userId: string
+): Promise<HungerNeedWithMeta[]> {
+  const { data: acceptances, error: acceptError } = await supabase
+    .from("need_acceptances")
+    .select("need_id")
+    .eq("user_id", userId);
+
+  if (acceptError || !acceptances?.length) {
+    return [];
+  }
+
+  const needIds = acceptances.map((a) => a.need_id);
+  const { data: rows, error } = await supabase
+    .from("hunger_feed")
+    .select(
+      "id, user_id, description, location, category, people_needed, creator_display_name, status"
+    )
+    .eq("active", true)
+    .in("id", needIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const { data: countData } = await supabase
+    .from("need_acceptances")
+    .select("need_id")
+    .in("need_id", needIds);
+
+  const countByNeed: Record<string, number> = {};
+  for (const row of countData ?? []) {
+    countByNeed[row.need_id] = (countByNeed[row.need_id] ?? 0) + 1;
+  }
+
+  return (rows ?? []).map((row) =>
+    mapRowToNeedWithMeta(row, countByNeed[row.id] ?? 0, true)
+  );
+}
+
+/**
  * Accept a need (insert into need_acceptances). Idempotent: if already accepted, returns success.
  */
 export async function acceptNeed(

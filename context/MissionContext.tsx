@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Mission, MoodType } from "@/types";
+import { Mission, MoodType, HungerNeed } from "@/types";
 import { generateMission as generateMissionFromAI } from "@/lib/openai";
 import { getItem, setItem, KEYS } from "@/lib/storage";
 import { useAuth } from "./AuthContext";
@@ -9,10 +9,13 @@ interface MissionContextType {
   missionHistory: Mission[];
   loading: boolean;
   generating: boolean;
+  pendingCustomMoodText: string | null;
+  setPendingCustomMoodText: (text: string | null) => void;
   generateMission: (
     mood: MoodType,
     gladnessDrivers: string[],
-    customMoodText?: string
+    customMoodText?: string,
+    needs?: HungerNeed[]
   ) => Promise<Mission>;
   acceptMission: () => Promise<void>;
   completeMission: () => Promise<void>;
@@ -25,6 +28,8 @@ const MissionContext = createContext<MissionContextType>({
   missionHistory: [],
   loading: true,
   generating: false,
+  pendingCustomMoodText: null,
+  setPendingCustomMoodText: () => {},
   generateMission: async () => ({} as Mission),
   acceptMission: async () => {},
   completeMission: async () => {},
@@ -37,6 +42,7 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
   const [missionHistory, setMissionHistory] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [pendingCustomMoodText, setPendingCustomMoodText] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -75,14 +81,15 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
   const generateMission = async (
     mood: MoodType,
     gladnessDrivers: string[],
-    customMoodText?: string
+    customMoodText?: string,
+    needs?: HungerNeed[]
   ): Promise<Mission> => {
     setGenerating(true);
     try {
       const mission = await generateMissionFromAI(
         mood,
         gladnessDrivers,
-        [],
+        needs ?? [],
         customMoodText
       );
       setCurrentMission(mission);
@@ -136,6 +143,8 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
         missionHistory,
         loading,
         generating,
+        pendingCustomMoodText,
+        setPendingCustomMoodText,
         generateMission,
         acceptMission,
         completeMission,

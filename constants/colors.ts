@@ -1,11 +1,11 @@
 export const Colors = {
-  primary: "#22C55E",
-  primaryLight: "rgba(34, 197, 94, 0.1)",
-  bgLight: "#F0FDF4",
-  bgDark: "#14532D",
-  gold: "#166534",
-  parchment: "#DCFCE7",
-  reflectionBlue: "#166534",
+  primary: "#4a6b5a",
+  primaryLight: "rgba(74, 107, 90, 0.1)",
+  bgLight: "#f0f1f3",
+  bgDark: "#1e2328",
+  gold: "#5a6b5e",
+  parchment: "#e8eaed",
+  reflectionBlue: "#5c6369",
   white: "#FFFFFF",
   black: "#000000",
   gray: {

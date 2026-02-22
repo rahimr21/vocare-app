@@ -121,20 +121,38 @@ function getFallbackMission(
     };
   }
 
-  if (
-    mood === "bored" ||
-    (mood === "other" && customMoodText?.match(/down|sad|tired|lonely|breakup|heartbr/i))
-  ) {
-    const isEmotional = customMoodText?.match(/breakup|heartbr|loss|grief/i);
+  const isGriefOrDeath =
+    mood === "other" &&
+    customMoodText?.match(/died|death|passed|lost (a |my )?(pet|dog|cat|someone|loved one)|grieving|grief/i);
+  const isBreakupOrLoss =
+    mood === "other" &&
+    customMoodText?.match(
+      /broke up|break up|breakup|girlfriend|boyfriend|relationship|heartbr|loss|lost someone|divorce|split/i
+    );
+  if (isGriefOrDeath) {
+    return {
+      title: "A Gentle Moment",
+      description:
+        "Take 10 minutes in a quiet spot. You might light a candle, write a few words, or simply sit and breathe. There's no need to do anything more. You're allowed to feel what you feel.",
+      location: "Any quiet spot — your room, a bench, or somewhere that feels safe",
+      estimatedMinutes: 10,
+      personalNote:
+        "I'm so sorry for your loss. What you're going through is real and hard. Be gentle with yourself today.",
+    };
+  }
+  if (mood === "bored" || (mood === "other" && customMoodText?.match(/down|sad|tired|lonely|overwhelmed/i)) || isBreakupOrLoss) {
+    const breakupNote = isBreakupOrLoss
+      ? "I'm really sorry you're going through this. Breakups and relationship pain are hard, and it's completely okay to feel what you're feeling. You're heard."
+      : customMoodText?.trim()
+        ? "What you're feeling is valid. It's okay to take things slow right now. You're heard."
+        : "Everyone needs a recharge sometimes. This mission is all about giving yourself permission to just be.";
     return {
       title: "Comfort & Recharge",
       description:
-        "Grab your favorite warm drink, find a cozy spot, and spend 10 minutes doing something small that brings you comfort — sketch, journal, or just people-watch.",
+        "Grab your favorite warm drink, find a cozy spot, and spend 10 minutes doing something small that brings you comfort — sketch, journal, listen to a song that helps, or just breathe. You don't have to do anything big today.",
       location: "Campus Cafe or Common Room",
       estimatedMinutes: 10,
-      personalNote: isEmotional
-        ? `I'm sorry you're going through this. ${customMoodText ? "What you're feeling" : "This"} is completely valid, and it's okay to take things slow right now.`
-        : "Everyone needs a recharge sometimes. This mission is all about giving yourself permission to just be.",
+      personalNote: breakupNote,
     };
   }
 

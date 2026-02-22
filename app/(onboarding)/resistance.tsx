@@ -6,6 +6,7 @@ import { ONBOARDING_STEPS_TOTAL } from "@/constants/onboarding";
 import { getItem, setItem, KEYS } from "@/lib/storage";
 import type { DeepOnboardingData } from "@/types";
 import Button from "@/components/ui/Button";
+import { theme } from "@/constants/theme";
 
 const defaultDeep: DeepOnboardingData = {
   personalityTraits: [],
@@ -92,9 +93,9 @@ export default function ResistanceScreen() {
               maximumValue={100}
               value={value}
               onValueChange={setValue}
-              minimumTrackTintColor="#22C55E"
+              minimumTrackTintColor={theme.primary}
               maximumTrackTintColor="#e5e7eb"
-              thumbTintColor={Platform.OS === "ios" ? "#22C55E" : "#22C55E"}
+              thumbTintColor={theme.primary}
               style={{ width: "100%", height: 40 }}
             />
             <Text className="font-work-sans text-sm text-gray-600 text-center mt-4">

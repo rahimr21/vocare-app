@@ -15,6 +15,7 @@ import { useUserProfile } from "@/context/UserProfileContext";
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
 import { log } from "@/lib/logger";
+import { theme } from "@/constants/theme";
 
 export default function SignUpScreen() {
   const [name, setName] = useState("");
@@ -60,7 +61,7 @@ export default function SignUpScreen() {
           {/* Header */}
           <View className="items-center mb-12">
             <View className="bg-primary/10 rounded-full p-4 mb-4">
-              <MaterialCommunityIcons name="fire" size={40} color="#22C55E" />
+              <MaterialCommunityIcons name="fire" size={40} color={theme.primary} />
             </View>
             <Text className="font-playfair-bold text-3xl text-gray-900">
               Create Account

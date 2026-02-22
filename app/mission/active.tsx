@@ -7,6 +7,7 @@ import { useMission } from "@/context/MissionContext";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
+import { theme } from "@/constants/theme";
 
 export default function ActiveMissionScreen() {
   const { currentMission, completeMission } = useMission();
@@ -54,7 +55,7 @@ export default function ActiveMissionScreen() {
                 <MaterialCommunityIcons
                   name="map-marker-outline"
                   size={20}
-                  color="#22C55E"
+                  color={theme.primary}
                 />
               </View>
               <View>
@@ -71,7 +72,7 @@ export default function ActiveMissionScreen() {
                 <MaterialCommunityIcons
                   name="clock-outline"
                   size={20}
-                  color="#22C55E"
+                  color={theme.primary}
                 />
               </View>
               <View>
@@ -99,7 +100,7 @@ export default function ActiveMissionScreen() {
               <MaterialCommunityIcons
                 name="lightbulb-outline"
                 size={20}
-                color="#166534"
+                color={theme.primary}
                 style={{ marginTop: 2, marginRight: 10 }}
               />
               <Text className="font-work-sans text-sm text-gray-600 flex-1 leading-5 italic">

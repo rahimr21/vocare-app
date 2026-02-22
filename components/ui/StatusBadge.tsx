@@ -8,7 +8,7 @@ interface StatusBadgeProps {
 
 const variants = {
   active: { bg: "bg-blue-100", text: "text-blue-700" },
-  completed: { bg: "bg-green-100", text: "text-green-700" },
+  completed: { bg: "bg-primary/15", text: "text-primary" },
   pending: { bg: "bg-amber-100", text: "text-amber-700" },
 };
 

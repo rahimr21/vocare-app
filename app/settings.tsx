@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { theme } from "@/constants/theme";
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
@@ -68,7 +69,7 @@ export default function SettingsScreen() {
                 <MaterialCommunityIcons
                   name="account"
                   size={24}
-                  color="#22C55E"
+                  color={theme.primary}
                 />
               </View>
               <View className="flex-1">

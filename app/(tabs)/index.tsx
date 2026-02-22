@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,17 +14,34 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { useMission } from "@/context/MissionContext";
 import { MOODS } from "@/constants/moods";
-import { MoodType } from "@/types";
+import { MoodType, HungerNeedWithMeta } from "@/types";
 import MoodButton from "@/components/ui/MoodButton";
 import Card from "@/components/ui/Card";
+import { theme } from "@/constants/theme";
+import { fetchMyAcceptedNeeds } from "@/lib/hungerFeed";
 
 export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
   const [customMoodText, setCustomMoodText] = useState("");
+  const [myAcceptedNeeds, setMyAcceptedNeeds] = useState<HungerNeedWithMeta[]>([]);
+  const [loadingNeeds, setLoadingNeeds] = useState(true);
   const { user } = useAuth();
   const { profile } = useUserProfile();
-  const { currentMission, missionHistory } = useMission();
+  const { currentMission, missionHistory, setPendingCustomMoodText } = useMission();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!user?.id) {
+      setMyAcceptedNeeds([]);
+      setLoadingNeeds(false);
+      return;
+    }
+    setLoadingNeeds(true);
+    fetchMyAcceptedNeeds(user.id)
+      .then(setMyAcceptedNeeds)
+      .catch(() => setMyAcceptedNeeds([]))
+      .finally(() => setLoadingNeeds(false));
+  }, [user?.id]);
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -43,17 +61,26 @@ export default function HomeScreen() {
       return;
     }
     setSelectedMood(mood);
-    router.push({
-      pathname: "/mission/loading",
-      params: { mood },
-    });
+    const taskChoiceMoods: MoodType[] = ["energized", "bored", "content"];
+    if (taskChoiceMoods.includes(mood)) {
+      router.push({
+        pathname: "/mission/choose-task",
+        params: { mood },
+      });
+    } else {
+      router.push({
+        pathname: "/mission/loading",
+        params: { mood },
+      });
+    }
   };
 
   const handleOtherMoodSubmit = () => {
     if (!customMoodText.trim()) return;
+    setPendingCustomMoodText(customMoodText.trim());
     router.push({
       pathname: "/mission/loading",
-      params: { mood: "other", customMoodText: customMoodText.trim() },
+      params: { mood: "other" },
     });
   };
 
@@ -112,7 +139,7 @@ export default function HomeScreen() {
                       <MaterialCommunityIcons
                         name="compass-outline"
                         size={20}
-                        color="#22C55E"
+                        color={theme.primary}
                       />
                     </View>
                     <View className="flex-1">
@@ -217,6 +244,65 @@ export default function HomeScreen() {
               </Text>
             </Card>
           </View>
+
+          {/* Tasks for others */}
+          <Text className="font-work-sans-semibold text-lg text-gray-900 mb-3 mt-6">
+            Tasks for others
+          </Text>
+          <Card className="mb-6">
+            {loadingNeeds ? (
+              <View className="py-4 items-center">
+                <ActivityIndicator size="small" color={theme.primary} />
+              </View>
+            ) : myAcceptedNeeds.length === 0 ? (
+              <Text className="font-work-sans text-sm text-gray-500 text-center py-3">
+                No tasks for others yet — accept a need on the Community tab.
+              </Text>
+            ) : (
+              <View>
+                {myAcceptedNeeds.map((need) => {
+                  const isDone = need.status === "filled";
+                  return (
+                    <TouchableOpacity
+                      key={need.id}
+                      onPress={() => router.push(`/need/${need.id}`)}
+                      className="py-3 border-b border-gray-100 last:border-b-0"
+                    >
+                      <Text
+                        className="font-work-sans text-sm text-gray-900"
+                        numberOfLines={2}
+                      >
+                        {need.description}
+                      </Text>
+                      <View className="flex-row items-center mt-1">
+                        <View
+                          className={`rounded-full px-2 py-0.5 ${
+                            isDone ? "bg-gray-200" : "bg-primary/15"
+                          }`}
+                        >
+                          <Text
+                            className={`font-work-sans text-xs ${
+                              isDone ? "text-gray-600" : "text-primary"
+                            }`}
+                          >
+                            {isDone ? "Done" : "In progress"}
+                          </Text>
+                        </View>
+                        {need.location ? (
+                          <Text
+                            className="font-work-sans text-xs text-gray-400 ml-2"
+                            numberOfLines={1}
+                          >
+                            {need.location}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+          </Card>
         </View>
       </ScrollView>
     </SafeAreaView>

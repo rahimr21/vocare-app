@@ -20,6 +20,7 @@ import {
 import { HungerNeedWithMeta } from "@/types";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { theme } from "@/constants/theme";
 
 export default function NeedDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -92,7 +93,7 @@ export default function NeedDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-bg-light">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#22C55E" />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text className="font-work-sans text-gray-500 mt-3">
             Loading...
           </Text>

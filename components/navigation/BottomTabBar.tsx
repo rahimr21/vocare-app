@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text, Platform } from "react-native";
 import { BlurView } from "expo-blur";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { theme } from "@/constants/theme";
 
 const TAB_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
   index: "home",
@@ -69,7 +70,7 @@ export default function BottomTabBar({
                 <MaterialCommunityIcons
                   name={iconName}
                   size={24}
-                  color={isFocused ? "#22C55E" : "#9CA3AF"}
+                  color={isFocused ? theme.primary : "#9CA3AF"}
                 />
               </View>
               <Text

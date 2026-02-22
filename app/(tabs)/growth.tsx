@@ -48,6 +48,8 @@ export default function GrowthScreen() {
               <GrowthTree
                 missions={completedMissions}
                 onLeafPress={setSelectedMission}
+                focusedMissionId={selectedMission?.id ?? null}
+                onCloseFocus={() => setSelectedMission(null)}
               />
             </View>
 

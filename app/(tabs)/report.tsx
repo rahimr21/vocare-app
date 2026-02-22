@@ -9,7 +9,7 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
@@ -17,6 +17,7 @@ import { supabase } from "@/lib/supabase";
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
 import CategoryChip from "@/components/ui/CategoryChip";
+import { theme } from "@/constants/theme";
 
 const CATEGORIES = [
   { id: "service" as const, label: "Service" },
@@ -25,6 +26,7 @@ const CATEGORIES = [
 ];
 
 export default function ReportScreen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { profile } = useUserProfile();
   const [description, setDescription] = useState("");
@@ -95,7 +97,7 @@ export default function ReportScreen() {
         className="flex-1"
       >
         <ScrollView
-          contentContainerStyle={{ paddingBottom: 220 }}
+          contentContainerStyle={{ paddingBottom: 240 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -105,7 +107,7 @@ export default function ReportScreen() {
               <MaterialCommunityIcons
                 name="format-quote-open"
                 size={24}
-                color="#22C55E"
+                color={theme.primary}
                 style={{ opacity: 0.4, marginBottom: 4 }}
               />
               <Text className="font-work-sans text-sm text-gray-600 italic leading-5">
@@ -214,8 +216,11 @@ export default function ReportScreen() {
           </View>
         </ScrollView>
 
-        {/* Bottom CTA */}
-        <View className="absolute bottom-0 left-0 right-0 bg-bg-light px-6 pb-10 pt-4 border-t border-gray-100">
+        {/* Bottom CTA — above tab bar */}
+        <View
+          className="absolute bottom-0 left-0 right-0 bg-bg-light px-6 pt-4 border-t border-gray-100"
+          style={{ paddingBottom: insets.bottom + 88 }}
+        >
           <Button
             title="Offer this Need"
             onPress={handleSubmit}

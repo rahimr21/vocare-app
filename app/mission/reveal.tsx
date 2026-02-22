@@ -6,6 +6,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useMission } from "@/context/MissionContext";
 import ScrollCard from "@/components/mission/ScrollCard";
 import Button from "@/components/ui/Button";
+import { theme } from "@/constants/theme";
+
+const gradientColors = [theme.primary, "#3d5a4c", "#2d4035"] as const;
 
 export default function MissionRevealScreen() {
   const { currentMission, acceptMission, skipMission } = useMission();
@@ -33,7 +36,7 @@ export default function MissionRevealScreen() {
 
   return (
     <LinearGradient
-      colors={["#166534", "#14532D", "#052e16"]}
+      colors={[...gradientColors]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1">

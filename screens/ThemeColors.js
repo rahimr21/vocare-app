@@ -1,12 +1,12 @@
 /**
- * Sage Green design system – use in StyleSheet only.
+ * Dim, professional design system – use in StyleSheet only.
  */
 export const theme = {
-  background: "#F0FDF4",
-  primary: "#22C55E",
-  secondary: "#BBF7D0",
-  textDark: "#14532D",
-  textLight: "#166534",
-  cardBg: "#FFFFFF",
-  cardShadow: "rgba(34, 197, 94, 0.08)",
+  background: "#f0f1f3",
+  primary: "#4a6b5a",
+  secondary: "#7a9a8a",
+  textDark: "#1e2328",
+  textLight: "#5c6369",
+  cardBg: "#ffffff",
+  cardShadow: "rgba(30, 35, 40, 0.08)",
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { theme } from "@/constants/theme";
 
 interface IconCircleProps {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -12,8 +13,8 @@ interface IconCircleProps {
 export default function IconCircle({
   icon,
   size = 40,
-  color = "#22C55E",
-  bgColor = "rgba(34, 197, 94, 0.1)",
+  color = theme.primary,
+  bgColor = "rgba(74, 107, 90, 0.1)",
 }: IconCircleProps) {
   return (
     <View
