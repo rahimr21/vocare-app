@@ -106,6 +106,12 @@ CREATE POLICY "Users can submit needs"
   WITH CHECK (auth.uid() = user_id);
 ```
 
+### Migration: Interactive needs (acceptances, creator, people needed)
+
+Run **after** the base tables exist. Copy the contents of [supabase/migrations/001_interactive_needs.sql](supabase/migrations/001_interactive_needs.sql) into the Supabase SQL Editor and run it. Adds columns to `hunger_feed`, creates `need_acceptances`, and RLS.
+
+For other migrations, see the [supabase/](supabase/) folder.
+
 ### `journal_entries`
 
 Optional journaling data linked to missions.

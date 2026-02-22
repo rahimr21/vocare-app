@@ -7,10 +7,12 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useUserProfile } from "@/context/UserProfileContext";
 import { supabase } from "@/lib/supabase";
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
@@ -24,12 +26,20 @@ const CATEGORIES = [
 
 export default function ReportScreen() {
   const { user } = useAuth();
+  const { profile } = useUserProfile();
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState<
     "service" | "organization" | "support" | null
   >(null);
+  const [peopleNeededUnlimited, setPeopleNeededUnlimited] = useState(false);
+  const [peopleNeeded, setPeopleNeeded] = useState("1");
   const [loading, setLoading] = useState(false);
+
+  const creatorDisplayName =
+    profile?.displayName ||
+    user?.user_metadata?.display_name ||
+    "Someone";
 
   const handleSubmit = async () => {
     if (!description.trim()) {
@@ -48,6 +58,9 @@ export default function ReportScreen() {
       Alert.alert("Sign in required", "Please sign in to submit a need.");
       return;
     }
+    const num = peopleNeededUnlimited
+      ? null
+      : Math.max(1, parseInt(peopleNeeded, 10) || 1);
 
     setLoading(true);
     const { error } = await supabase.from("hunger_feed").insert({
@@ -55,6 +68,8 @@ export default function ReportScreen() {
       description: description.trim(),
       location: location.trim(),
       category,
+      people_needed: num,
+      creator_display_name: creatorDisplayName,
     });
 
     setLoading(false);
@@ -65,6 +80,8 @@ export default function ReportScreen() {
     setDescription("");
     setLocation("");
     setCategory(null);
+    setPeopleNeeded("1");
+    setPeopleNeededUnlimited(false);
     Alert.alert(
       "Need Submitted",
       "Thank you for offering this need to the community. It will help match students with meaningful missions."
@@ -152,6 +169,47 @@ export default function ReportScreen() {
                   onPress={() => setCategory(cat.id)}
                 />
               ))}
+            </View>
+
+            {/* How many people needed */}
+            <Text className="font-work-sans-medium text-sm text-gray-600 mt-5 mb-2">
+              How many people do you need?
+            </Text>
+            <View className="flex-row items-center flex-wrap gap-3">
+              <RNTextInput
+                className="bg-stone-100 rounded-xl px-4 py-3 font-work-sans text-base text-gray-900 w-20"
+                placeholder="1"
+                placeholderTextColor="#9CA3AF"
+                value={peopleNeededUnlimited ? "" : peopleNeeded}
+                onChangeText={(t) => {
+                  const n = t.replace(/\D/g, "");
+                  if (n.length <= 3) setPeopleNeeded(n || "1");
+                }}
+                keyboardType="number-pad"
+                editable={!peopleNeededUnlimited}
+              />
+              <TouchableOpacity
+                onPress={() => setPeopleNeededUnlimited(!peopleNeededUnlimited)}
+                className="flex-row items-center"
+              >
+                <View
+                  className={`w-5 h-5 rounded border-2 mr-2 ${
+                    peopleNeededUnlimited ? "bg-primary border-primary" : "border-gray-300"
+                  }`}
+                >
+                  {peopleNeededUnlimited && (
+                    <MaterialCommunityIcons
+                      name="check"
+                      size={14}
+                      color="#fff"
+                      style={{ position: "absolute", left: 2, top: 1 }}
+                    />
+                  )}
+                </View>
+                <Text className="font-work-sans text-gray-700">
+                  As many as possible
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>

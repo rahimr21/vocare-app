@@ -36,6 +36,23 @@ export interface HungerNeed {
   category: "service" | "organization" | "support";
 }
 
+/** Need with creator info, people needed, status, and acceptance data for list/detail UI */
+export interface HungerNeedWithMeta extends HungerNeed {
+  user_id: string | null;
+  creator_display_name: string | null;
+  people_needed: number | null;
+  status?: "open" | "filled" | "cancelled";
+  acceptance_count: number;
+  current_user_accepted: boolean;
+}
+
+export interface NeedAcceptance {
+  id: string;
+  need_id: string;
+  user_id: string;
+  created_at: string;
+}
+
 export interface UserProfile {
   gladnessDrivers: string[];
   onboardingComplete: boolean;

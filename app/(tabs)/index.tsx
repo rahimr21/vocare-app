@@ -12,15 +12,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { useMission } from "@/context/MissionContext";
-import { fetchHungerFeed } from "@/lib/hungerFeed";
+import { fetchHungerFeedWithMeta } from "@/lib/hungerFeed";
 import { MOODS } from "@/constants/moods";
-import { HungerNeed, MoodType } from "@/types";
+import { HungerNeedWithMeta, MoodType } from "@/types";
 import MoodButton from "@/components/ui/MoodButton";
 import Card from "@/components/ui/Card";
 
 export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
-  const [hungerFeed, setHungerFeed] = useState<HungerNeed[] | null>(null);
+  const [hungerFeed, setHungerFeed] = useState<HungerNeedWithMeta[] | null>(null);
   const [feedError, setFeedError] = useState<string | null>(null);
   const { user } = useAuth();
   const { profile } = useUserProfile();
@@ -32,7 +32,7 @@ export default function HomeScreen() {
     (async () => {
       setFeedError(null);
       try {
-        const needs = await fetchHungerFeed();
+        const needs = await fetchHungerFeedWithMeta(user?.id);
         if (!cancelled) setHungerFeed(needs);
       } catch (e) {
         if (!cancelled) {
@@ -44,7 +44,7 @@ export default function HomeScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user?.id]);
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -213,28 +213,43 @@ export default function HomeScreen() {
             </Card>
           ) : (
             <View className="mb-6">
-              {hungerFeed.slice(0, 5).map((need) => (
-                <Card key={need.id} className="mb-3">
-                  <Text className="font-work-sans text-gray-900 text-sm">
-                    {need.description}
-                  </Text>
-                  <View className="flex-row items-center mt-2">
-                    <MaterialCommunityIcons
-                      name="map-marker-outline"
-                      size={14}
-                      color="#6B7280"
-                    />
-                    <Text className="font-work-sans text-xs text-gray-500 ml-1">
-                      {need.location}
-                    </Text>
-                    <View className="bg-gray-100 rounded px-2 py-0.5 ml-2">
-                      <Text className="font-work-sans text-xs text-gray-600 capitalize">
-                        {need.category}
+              {hungerFeed.slice(0, 5).map((need) => {
+                const countLabel =
+                  need.people_needed != null
+                    ? `${need.acceptance_count} of ${need.people_needed} accepted`
+                    : `${need.acceptance_count} accepted`;
+                return (
+                  <TouchableOpacity
+                    key={need.id}
+                    onPress={() => router.push(`/need/${need.id}`)}
+                    activeOpacity={0.8}
+                  >
+                    <Card className="mb-3">
+                      <Text className="font-work-sans text-gray-900 text-sm">
+                        {need.description}
                       </Text>
-                    </View>
-                  </View>
-                </Card>
-              ))}
+                      <View className="flex-row items-center mt-2 flex-wrap gap-x-2 gap-y-1">
+                        <MaterialCommunityIcons
+                          name="map-marker-outline"
+                          size={14}
+                          color="#6B7280"
+                        />
+                        <Text className="font-work-sans text-xs text-gray-500">
+                          {need.location}
+                        </Text>
+                        <View className="bg-gray-100 rounded px-2 py-0.5">
+                          <Text className="font-work-sans text-xs text-gray-600 capitalize">
+                            {need.category}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text className="font-work-sans text-xs text-gray-400 mt-1.5">
+                        Submitted by {need.creator_display_name ?? "Someone"} · {countLabel}
+                      </Text>
+                    </Card>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           )}
 
