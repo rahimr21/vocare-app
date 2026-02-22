@@ -1,4 +1,5 @@
 import "../global.css";
+import "@/lib/nativewind-interop";
 import React, { useEffect } from "react";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -23,6 +24,7 @@ import {
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { UserProfileProvider, useUserProfile } from "@/context/UserProfileContext";
 import { MissionProvider } from "@/context/MissionContext";
+import { log } from "@/lib/logger";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,24 +35,45 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (authLoading || profileLoading) return;
+    const inAuthGroup =
+      segments[0] === "(auth)" ||
+      segments[0] === "login" ||
+      segments[0] === "signup";
+    const inOnboardingGroup =
+      segments[0] === "(onboarding)" ||
+      segments[0] === "welcome" ||
+      segments[0] === "gladness";
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboardingGroup = segments[0] === "(onboarding)";
+    log("AuthGate", "effect run", {
+      segments: segments as string[],
+      segment0: segments[0],
+      authLoading,
+      profileLoading,
+      hasUser: !!user,
+      userId: user?.id ?? null,
+      onboardingComplete: profile?.onboardingComplete ?? null,
+      inAuthGroup,
+      inOnboardingGroup,
+    });
+
+    if (authLoading || profileLoading) return;
 
     if (!user) {
       // Not signed in → go to login
       if (!inAuthGroup) {
+        log("AuthGate", "redirect", { to: "/(auth)/login" });
         router.replace("/(auth)/login");
       }
     } else if (!profile?.onboardingComplete) {
       // Signed in but hasn't onboarded
       if (!inOnboardingGroup) {
+        log("AuthGate", "redirect", { to: "/(onboarding)/welcome" });
         router.replace("/(onboarding)/welcome");
       }
     } else {
       // Signed in and onboarded → go to main app
       if (inAuthGroup || inOnboardingGroup) {
+        log("AuthGate", "redirect", { to: "/(tabs)" });
         router.replace("/(tabs)");
       }
     }

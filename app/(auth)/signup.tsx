@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
+import { log } from "@/lib/logger";
 
 export default function SignUpScreen() {
   const [name, setName] = useState("");
@@ -34,8 +35,11 @@ export default function SignUpScreen() {
     }
     setLoading(true);
     const { error } = await signUp(email.trim(), password, name.trim());
+    log("SignUp", "signUp returned", { error: error ?? null });
     if (!error) {
+      log("SignUp", "calling updateDisplayName");
       await updateDisplayName(name.trim());
+      log("SignUp", "updateDisplayName done");
     }
     setLoading(false);
     if (error) {

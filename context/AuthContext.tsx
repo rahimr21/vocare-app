@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { log } from "@/lib/logger";
 
 interface AuthContextType {
   user: User | null;
@@ -32,6 +33,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      log("Auth", "getSession result", {
+        hasSession: !!session,
+        userId: session?.user?.id ?? null,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -40,7 +45,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      log("Auth", "onAuthStateChange", {
+        event,
+        hasSession: !!session,
+        userId: session?.user?.id ?? null,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -58,12 +68,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    log("Auth", "signUp called", { email: email.slice(0, 3) + "..." });
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { display_name: name },
       },
+    });
+    log("Auth", "signUp result", {
+      hasUser: !!data?.user,
+      userId: data?.user?.id ?? null,
+      error: error?.message ?? null,
     });
     return { error: error?.message ?? null };
   };

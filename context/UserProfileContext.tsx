@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { UserProfile } from "@/types";
 import { getItem, setItem, KEYS } from "@/lib/storage";
 import { useAuth } from "./AuthContext";
+import { log } from "@/lib/logger";
 
 interface UserProfileContextType {
   profile: UserProfile | null;
@@ -37,6 +38,7 @@ export function UserProfileProvider({
   const { user } = useAuth();
 
   useEffect(() => {
+    log("Profile", "user changed", { userId: user?.id ?? null, hasUser: !!user });
     if (user) {
       loadProfile();
     } else {
@@ -46,7 +48,12 @@ export function UserProfileProvider({
   }, [user?.id]);
 
   const loadProfile = async () => {
+    log("Profile", "loadProfile start");
     const stored = await getItem<UserProfile>(KEYS.USER_PROFILE);
+    log("Profile", "loadProfile result", {
+      hadStored: !!stored,
+      onboardingComplete: stored?.onboardingComplete ?? defaultProfile.onboardingComplete,
+    });
     if (stored) {
       setProfile(stored);
     } else {
@@ -71,8 +78,10 @@ export function UserProfileProvider({
   };
 
   const updateDisplayName = async (name: string) => {
+    log("Profile", "updateDisplayName", { name, hadProfile: !!profile });
     const updated = { ...(profile || defaultProfile), displayName: name };
     await saveProfile(updated);
+    log("Profile", "updateDisplayName done", { onboardingComplete: updated.onboardingComplete });
   };
 
   const resetProfile = async () => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,8 +11,13 @@ export default function MissionRevealScreen() {
   const { currentMission, acceptMission, skipMission } = useMission();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!currentMission) {
+      router.replace("/(tabs)");
+    }
+  }, [currentMission]);
+
   if (!currentMission) {
-    router.replace("/(tabs)");
     return null;
   }
 

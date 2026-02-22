@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from "@/components/ui/Button";
+import { log } from "@/lib/logger";
 
 export default function WelcomeScreen() {
   const router = useRouter();
+
+  useEffect(() => {
+    log("Welcome", "screen mounted");
+    return () => log("Welcome", "screen unmounted");
+  }, []);
 
   return (
     <LinearGradient

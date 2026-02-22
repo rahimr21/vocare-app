@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,8 +12,13 @@ export default function ActiveMissionScreen() {
   const { currentMission, completeMission } = useMission();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!currentMission) {
+      router.replace("/(tabs)");
+    }
+  }, [currentMission]);
+
   if (!currentMission) {
-    router.replace("/(tabs)");
     return null;
   }
 
