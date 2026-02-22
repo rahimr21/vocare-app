@@ -95,7 +95,7 @@ export default function ReportScreen() {
         className="flex-1"
       >
         <ScrollView
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 220 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -105,10 +105,10 @@ export default function ReportScreen() {
               <MaterialCommunityIcons
                 name="format-quote-open"
                 size={24}
-                color="#135bec"
+                color="#22C55E"
                 style={{ opacity: 0.4, marginBottom: 4 }}
               />
-              <Text className="font-merriweather text-sm text-gray-600 italic leading-5">
+              <Text className="font-work-sans text-sm text-gray-600 italic leading-5">
                 "The place God calls you to is the place where your deep
                 gladness and the world's deep hunger meet."
               </Text>
@@ -118,7 +118,7 @@ export default function ReportScreen() {
             </View>
 
             {/* Header */}
-            <Text className="font-playfair-bold text-2xl text-gray-900 mb-1">
+            <Text className="font-work-sans-bold text-2xl text-gray-900 mb-1">
               Submit a Need
             </Text>
             <Text className="font-work-sans text-gray-500 text-sm mb-6 leading-5">
@@ -215,7 +215,7 @@ export default function ReportScreen() {
         </ScrollView>
 
         {/* Bottom CTA */}
-        <View className="absolute bottom-0 left-0 right-0 bg-bg-light px-6 pb-24 pt-4 border-t border-gray-100">
+        <View className="absolute bottom-0 left-0 right-0 bg-bg-light px-6 pb-10 pt-4 border-t border-gray-100">
           <Button
             title="Offer this Need"
             onPress={handleSubmit}

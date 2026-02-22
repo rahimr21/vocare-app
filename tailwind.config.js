@@ -8,12 +8,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#135bec",
-        "bg-light": "#F9F7F2",
-        "bg-dark": "#101622",
-        gold: "#D4AF37",
-        parchment: "#FDFBF7",
-        "reflection-blue": "#0A2E76",
+        primary: "#22C55E",
+        "bg-light": "#F0FDF4",
+        "bg-dark": "#14532D",
+        gold: "#166534",
+        parchment: "#DCFCE7",
+        "reflection-blue": "#166534",
       },
       fontFamily: {
         "work-sans": ["WorkSans_400Regular"],

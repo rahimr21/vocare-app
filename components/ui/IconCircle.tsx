@@ -12,8 +12,8 @@ interface IconCircleProps {
 export default function IconCircle({
   icon,
   size = 40,
-  color = "#135bec",
-  bgColor = "rgba(19, 91, 236, 0.1)",
+  color = "#22C55E",
+  bgColor = "rgba(34, 197, 94, 0.1)",
 }: IconCircleProps) {
   return (
     <View

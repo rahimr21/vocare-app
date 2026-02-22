@@ -31,7 +31,7 @@ export default function ScrollCard({ mission }: ScrollCardProps) {
       </View>
 
       {/* Title */}
-      <Text className="font-merriweather-bold text-xl text-gray-900 text-center mb-3">
+      <Text className="font-work-sans-bold text-xl text-gray-900 text-center mb-3">
         {mission.title}
       </Text>
 
@@ -39,7 +39,7 @@ export default function ScrollCard({ mission }: ScrollCardProps) {
       <View className="h-px bg-gold/30 mx-8 mb-4" />
 
       {/* Description */}
-      <Text className="font-merriweather text-base text-gray-700 text-center leading-7 mb-4">
+      <Text className="font-work-sans text-base text-gray-700 text-center leading-7 mb-4">
         {mission.description}
       </Text>
 

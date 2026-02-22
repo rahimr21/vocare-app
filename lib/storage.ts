@@ -5,6 +5,7 @@ const KEYS = {
   MISSIONS: "vocare:missions",
   SUBMITTED_NEEDS: "vocare:submitted_needs",
   JOURNAL_ENTRIES: "vocare:journal_entries",
+  ONBOARDING_DEEP: "vocare:onboarding_deep",
 } as const;
 
 export async function getItem<T>(key: string): Promise<T | null> {

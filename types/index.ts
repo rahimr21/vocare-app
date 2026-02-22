@@ -1,4 +1,4 @@
-export type MoodType = "anxious" | "bored" | "energized" | "content";
+export type MoodType = "anxious" | "bored" | "energized" | "content" | "other";
 
 export interface Mood {
   id: MoodType;
@@ -27,6 +27,7 @@ export interface Mission {
   feltAlive: boolean | null;
   createdAt: string;
   completedAt: string | null;
+  personalNote?: string;
 }
 
 export interface HungerNeed {
@@ -83,4 +84,14 @@ export interface TreeLeaf {
   y: number;
   leafState: "vibrant" | "faded"; // vibrant = felt alive, faded = desolation
   label: string;
+}
+
+/** Stored payload from deep onboarding. */
+export interface DeepOnboardingData {
+  personalityTraits: string[];
+  physicalLimitations: string[];
+  rechargeActivities: string[];
+  hunger: string | null;
+  resistance: number;
+  vocation: string;
 }

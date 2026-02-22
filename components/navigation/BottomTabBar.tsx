@@ -6,12 +6,14 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 const TAB_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
   index: "home",
+  needs: "hand-heart",
   growth: "tree",
-  report: "hand-heart",
+  report: "clipboard-text-outline",
 };
 
 const TAB_LABELS: Record<string, string> = {
   index: "Home",
+  needs: "Community",
   growth: "Growth",
   report: "Report",
 };
@@ -67,7 +69,7 @@ export default function BottomTabBar({
                 <MaterialCommunityIcons
                   name={iconName}
                   size={24}
-                  color={isFocused ? "#135bec" : "#9CA3AF"}
+                  color={isFocused ? "#22C55E" : "#9CA3AF"}
                 />
               </View>
               <Text

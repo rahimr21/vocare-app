@@ -46,7 +46,7 @@ export default function LoginScreen() {
           {/* Header */}
           <View className="items-center mb-12">
             <View className="bg-primary/10 rounded-full p-4 mb-4">
-              <MaterialCommunityIcons name="fire" size={40} color="#135bec" />
+              <MaterialCommunityIcons name="fire" size={40} color="#22C55E" />
             </View>
             <Text className="font-playfair-bold text-4xl text-gray-900">
               Vocare

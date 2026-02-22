@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Mission, MoodType } from "@/types";
 import { generateMission as generateMissionFromAI } from "@/lib/openai";
-import { fetchHungerFeed } from "@/lib/hungerFeed";
 import { getItem, setItem, KEYS } from "@/lib/storage";
 import { useAuth } from "./AuthContext";
 
@@ -12,7 +11,8 @@ interface MissionContextType {
   generating: boolean;
   generateMission: (
     mood: MoodType,
-    gladnessDrivers: string[]
+    gladnessDrivers: string[],
+    customMoodText?: string
   ) => Promise<Mission>;
   acceptMission: () => Promise<void>;
   completeMission: () => Promise<void>;
@@ -74,20 +74,16 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
 
   const generateMission = async (
     mood: MoodType,
-    gladnessDrivers: string[]
+    gladnessDrivers: string[],
+    customMoodText?: string
   ): Promise<Mission> => {
     setGenerating(true);
     try {
-      let needs: Awaited<ReturnType<typeof fetchHungerFeed>> | undefined;
-      try {
-        needs = await fetchHungerFeed();
-      } catch {
-        needs = [];
-      }
       const mission = await generateMissionFromAI(
         mood,
         gladnessDrivers,
-        needs
+        [],
+        customMoodText
       );
       setCurrentMission(mission);
       await saveMissions(mission, missionHistory);

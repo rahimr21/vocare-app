@@ -1,11 +1,11 @@
 export const Colors = {
-  primary: "#135bec",
-  primaryLight: "rgba(19, 91, 236, 0.1)",
-  bgLight: "#F9F7F2",
-  bgDark: "#101622",
-  gold: "#D4AF37",
-  parchment: "#FDFBF7",
-  reflectionBlue: "#0A2E76",
+  primary: "#22C55E",
+  primaryLight: "rgba(34, 197, 94, 0.1)",
+  bgLight: "#F0FDF4",
+  bgDark: "#14532D",
+  gold: "#166534",
+  parchment: "#DCFCE7",
+  reflectionBlue: "#166534",
   white: "#FFFFFF",
   black: "#000000",
   gray: {
@@ -25,5 +25,6 @@ export const Colors = {
     bored: "#8B5CF6",
     energized: "#EF4444",
     content: "#10B981",
+    other: "#6B7280",
   },
 } as const;

@@ -1,34 +1,56 @@
-import { HungerNeed, Mission, MoodType } from "@/types";
+import { HungerNeed, Mission, MoodType, DeepOnboardingData } from "@/types";
 import { MISSION_SYSTEM_PROMPT, buildMissionPrompt } from "@/constants/prompts";
-import { MOCK_HUNGER_FEED } from "@/constants/mockHungerFeed";
+import { getItem, KEYS } from "@/lib/storage";
+import { getWeather } from "@/lib/weather";
 
 interface OpenAIMissionResponse {
   title: string;
   description: string;
   location: string;
   estimatedMinutes: number;
+  personalNote?: string;
 }
 
 export async function generateMission(
   mood: MoodType,
   gladnessDrivers: string[],
-  needs?: HungerNeed[]
+  needs?: HungerNeed[],
+  customMoodText?: string
 ): Promise<Mission> {
   const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
-  const sourceNeeds =
-    needs && needs.length > 0 ? needs : MOCK_HUNGER_FEED;
-  const shuffled = [...sourceNeeds].sort(() => Math.random() - 0.5);
-  const selectedNeeds = shuffled.slice(0, 3);
+  const [deepData, weather, storedMissions] = await Promise.all([
+    getItem<DeepOnboardingData>(KEYS.ONBOARDING_DEEP),
+    getWeather(),
+    getItem<Mission[]>(KEYS.MISSIONS),
+  ]);
 
-  const userPrompt = buildMissionPrompt(
+  const recentTitles = (storedMissions || [])
+    .filter((m) => m.status === "completed" || m.status === "skipped")
+    .slice(0, 5)
+    .map((m) => m.title);
+
+  const selectedNeeds = needs && needs.length > 0
+    ? [...needs].sort(() => Math.random() - 0.5).slice(0, 3)
+    : [];
+
+  const userPrompt = buildMissionPrompt({
     mood,
+    customMoodText,
     gladnessDrivers,
-    selectedNeeds.map((n) => ({
+    personalityTraits: deepData?.personalityTraits,
+    physicalLimitations: deepData?.physicalLimitations,
+    rechargeActivities: deepData?.rechargeActivities,
+    hunger: deepData?.hunger,
+    resistance: deepData?.resistance,
+    vocationSnippet: deepData?.vocation,
+    needs: selectedNeeds.map((n) => ({
       description: n.description,
       location: n.location,
-    }))
-  );
+    })),
+    weather,
+    recentMissionTitles: recentTitles,
+  });
 
   let missionData: OpenAIMissionResponse;
 
@@ -49,8 +71,8 @@ export async function generateMission(
           { role: "system", content: MISSION_SYSTEM_PROMPT },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.8,
-        max_tokens: 300,
+        temperature: 0.95,
+        max_tokens: 500,
       }),
     });
 
@@ -61,9 +83,9 @@ export async function generateMission(
     const data = await response.json();
     const content = data.choices[0].message.content;
     missionData = JSON.parse(content);
-  } catch (error) {
-    console.warn("OpenAI call failed, using fallback mission:", error);
-    missionData = getFallbackMission(mood, gladnessDrivers, selectedNeeds);
+  } catch (err) {
+    console.warn("OpenAI call failed, using fallback mission:", err);
+    missionData = getFallbackMission(mood, gladnessDrivers, customMoodText);
   }
 
   return {
@@ -78,37 +100,49 @@ export async function generateMission(
     feltAlive: null,
     createdAt: new Date().toISOString(),
     completedAt: null,
+    personalNote: missionData.personalNote,
   };
 }
 
 function getFallbackMission(
   mood: MoodType,
   drivers: string[],
-  needs: HungerNeed[]
+  customMoodText?: string
 ): OpenAIMissionResponse {
   if (mood === "anxious") {
     return {
-      title: "Grounding Walk",
+      title: "Grounding Moment",
       description:
-        "Take a 10-minute walk around campus. Notice 5 things you can see, 4 you can hear, 3 you can touch. Let the world remind you that you are held.",
-      location: "Campus Quad",
+        "Find a quiet corner and take 10 slow breaths. Then notice 5 things you can see, 4 you can hear, and 3 you can touch. You deserve this moment of calm.",
+      location: "Any quiet spot on campus",
       estimatedMinutes: 10,
+      personalNote:
+        "It takes real courage to pause when you're feeling anxious. This gentle mission is designed to bring you back to the present.",
     };
   }
 
-  const need = needs[0];
-  if (!need) {
+  if (
+    mood === "bored" ||
+    (mood === "other" && customMoodText?.match(/down|sad|tired|lonely|breakup|heartbr/i))
+  ) {
+    const isEmotional = customMoodText?.match(/breakup|heartbr|loss|grief/i);
     return {
-      title: "Answer the Call",
-      description: `Take 15 minutes to offer your gifts of ${drivers.slice(0, 2).join(" and ")} somewhere on campus where you notice a need.`,
-      location: "Campus",
-      estimatedMinutes: 15,
+      title: "Comfort & Recharge",
+      description:
+        "Grab your favorite warm drink, find a cozy spot, and spend 10 minutes doing something small that brings you comfort — sketch, journal, or just people-watch.",
+      location: "Campus Cafe or Common Room",
+      estimatedMinutes: 10,
+      personalNote: isEmotional
+        ? `I'm sorry you're going through this. ${customMoodText ? "What you're feeling" : "This"} is completely valid, and it's okay to take things slow right now.`
+        : "Everyone needs a recharge sometimes. This mission is all about giving yourself permission to just be.",
     };
   }
+
   return {
-    title: "Answer the Call",
-    description: `${need.description}. Head to ${need.location} and offer 15 minutes of your time. Your gifts of ${drivers.slice(0, 2).join(" and ")} are exactly what's needed right now.`,
-    location: need.location,
+    title: "Share Your Gifts",
+    description: `Take 15 minutes to offer your gifts of ${drivers.slice(0, 2).join(" and ") || "presence"} somewhere on campus where you notice a need. Even small acts ripple outward.`,
+    location: "Campus",
     estimatedMinutes: 15,
+    personalNote: `Since you're feeling ${mood} today, this is a great moment to channel that energy into something meaningful.`,
   };
 }

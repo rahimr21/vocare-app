@@ -92,7 +92,7 @@ export default function NeedDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-bg-light">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#135bec" />
+          <ActivityIndicator size="large" color="#22C55E" />
           <Text className="font-work-sans text-gray-500 mt-3">
             Loading...
           </Text>

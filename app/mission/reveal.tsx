@@ -33,7 +33,7 @@ export default function MissionRevealScreen() {
 
   return (
     <LinearGradient
-      colors={["#101622", "#1a2332", "#0f1925"]}
+      colors={["#166534", "#14532D", "#052e16"]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
@@ -42,9 +42,16 @@ export default function MissionRevealScreen() {
           <Text className="font-work-sans text-white/50 text-sm text-center uppercase tracking-widest mb-4">
             Your Mission
           </Text>
-          <Text className="font-playfair-bold text-2xl text-white text-center mb-8">
+          <Text className="font-work-sans-bold text-2xl text-white text-center mb-4">
             A Call Has Arrived
           </Text>
+
+          {/* Personal note */}
+          {currentMission.personalNote ? (
+            <Text className="font-work-sans text-white/70 text-sm text-center italic mb-6 px-4 leading-5">
+              {currentMission.personalNote}
+            </Text>
+          ) : null}
 
           {/* Parchment scroll card */}
           <ScrollCard mission={currentMission} />

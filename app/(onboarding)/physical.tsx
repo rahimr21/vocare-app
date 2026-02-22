@@ -1,41 +1,76 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { useUserProfile } from "@/context/UserProfileContext";
-import { GLADNESS_PILLS, ONBOARDING_STEPS_TOTAL } from "@/constants/onboarding";
+import { PHYSICAL_OPTIONS, ONBOARDING_STEPS_TOTAL } from "@/constants/onboarding";
+import { getItem, setItem, KEYS } from "@/lib/storage";
+import type { DeepOnboardingData } from "@/types";
 import Button from "@/components/ui/Button";
 
-export default function GladnessScreen() {
+const defaultDeep: DeepOnboardingData = {
+  personalityTraits: [],
+  physicalLimitations: [],
+  rechargeActivities: [],
+  hunger: null,
+  resistance: 50,
+  vocation: "",
+};
+
+export default function PhysicalScreen() {
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const { updateGladnessDrivers } = useUserProfile();
+  const [ready, setReady] = useState(false);
   const router = useRouter();
-  const stepIndex = 0;
+  const stepIndex = 2;
 
-  const toggleDriver = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
-    );
+  useEffect(() => {
+    (async () => {
+      const stored = await getItem<DeepOnboardingData>(KEYS.ONBOARDING_DEEP);
+      if (stored?.physicalLimitations?.length) {
+        setSelected(stored.physicalLimitations);
+      }
+      setReady(true);
+    })();
+  }, []);
+
+  const toggleOption = (id: string) => {
+    if (id === "no-limitations") {
+      setSelected((prev) =>
+        prev.includes("no-limitations") ? [] : ["no-limitations"]
+      );
+      return;
+    }
+    setSelected((prev) => {
+      const without = prev.filter((i) => i !== "no-limitations");
+      return without.includes(id)
+        ? without.filter((i) => i !== id)
+        : [...without, id];
+    });
   };
 
   const handleContinue = async () => {
-    if (selected.length < 1) {
-      Alert.alert("Select One", "Please select at least one activity");
-      return;
-    }
+    if (selected.length < 1) return;
     setLoading(true);
-    await updateGladnessDrivers(selected);
+    const stored = await getItem<DeepOnboardingData>(KEYS.ONBOARDING_DEEP);
+    const merged: DeepOnboardingData = {
+      ...defaultDeep,
+      ...stored,
+      physicalLimitations: selected,
+    };
+    await setItem(KEYS.ONBOARDING_DEEP, merged);
     setLoading(false);
-    router.push("/(onboarding)/personality");
+    router.push("/(onboarding)/preferences");
   };
+
+  if (!ready) return null;
 
   return (
     <View className="flex-1 bg-bg-light">
-      {/* Progress bar */}
       <View className="h-1 bg-gray-200">
         <View
           className="h-full bg-primary rounded-full"
-          style={{ width: `${((stepIndex + 1) / ONBOARDING_STEPS_TOTAL) * 100}%` }}
+          style={{
+            width: `${((stepIndex + 1) / ONBOARDING_STEPS_TOTAL) * 100}%`,
+          }}
         />
       </View>
 
@@ -51,22 +86,20 @@ export default function GladnessScreen() {
             <Text className="font-work-sans-medium text-primary">Back</Text>
           </TouchableOpacity>
 
-          {/* Header */}
           <Text className="font-playfair-bold text-2xl text-gray-900 mb-2">
-            What activities make you lose track of time?
+            Is there anything that limits your physical activity right now?
           </Text>
           <Text className="font-work-sans text-gray-500 text-base mb-8 leading-6">
-            Select all that resonate with you.
+            This helps us suggest missions you can actually do.
           </Text>
 
-          {/* Pills */}
           <View className="flex-row flex-wrap">
-            {GLADNESS_PILLS.map((pill) => {
-              const isSelected = selected.includes(pill.id);
+            {PHYSICAL_OPTIONS.map((option) => {
+              const isSelected = selected.includes(option.id);
               return (
                 <TouchableOpacity
-                  key={pill.id}
-                  onPress={() => toggleDriver(pill.id)}
+                  key={option.id}
+                  onPress={() => toggleOption(option.id)}
                   activeOpacity={0.7}
                   className={`px-5 py-3 rounded-full mr-2 mb-3 ${
                     isSelected
@@ -90,7 +123,7 @@ export default function GladnessScreen() {
                       isSelected ? "text-white" : "text-gray-700"
                     }`}
                   >
-                    {pill.label}
+                    {option.label}
                   </Text>
                 </TouchableOpacity>
               );
@@ -98,7 +131,7 @@ export default function GladnessScreen() {
           </View>
 
           <Text className="font-work-sans text-sm text-gray-400 mt-4 text-center">
-            {selected.length} selected · Choose at least 1
+            {selected.length} selected
           </Text>
         </View>
       </ScrollView>

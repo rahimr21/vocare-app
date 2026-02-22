@@ -10,6 +10,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
+      <Tabs.Screen name="needs" />
       <Tabs.Screen name="growth" />
       <Tabs.Screen name="report" />
     </Tabs>

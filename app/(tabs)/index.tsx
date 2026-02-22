@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,39 +12,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/context/UserProfileContext";
 import { useMission } from "@/context/MissionContext";
-import { fetchHungerFeedWithMeta } from "@/lib/hungerFeed";
 import { MOODS } from "@/constants/moods";
-import { HungerNeedWithMeta, MoodType } from "@/types";
+import { MoodType } from "@/types";
 import MoodButton from "@/components/ui/MoodButton";
 import Card from "@/components/ui/Card";
 
 export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
-  const [hungerFeed, setHungerFeed] = useState<HungerNeedWithMeta[] | null>(null);
-  const [feedError, setFeedError] = useState<string | null>(null);
+  const [customMoodText, setCustomMoodText] = useState("");
   const { user } = useAuth();
   const { profile } = useUserProfile();
-  const { currentMission, missionHistory, generating, generateMission } = useMission();
+  const { currentMission, missionHistory } = useMission();
   const router = useRouter();
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setFeedError(null);
-      try {
-        const needs = await fetchHungerFeedWithMeta(user?.id);
-        if (!cancelled) setHungerFeed(needs);
-      } catch (e) {
-        if (!cancelled) {
-          setHungerFeed([]);
-          setFeedError(e instanceof Error ? e.message : "Failed to load needs");
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.id]);
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -58,12 +37,24 @@ export default function HomeScreen() {
     user?.user_metadata?.display_name ||
     "Pilgrim";
 
-  const handleMoodSelect = async (mood: MoodType) => {
-    setSelectedMood(mood);
-    if (profile?.gladnessDrivers) {
-      await generateMission(mood, profile.gladnessDrivers);
-      router.push("/mission/reveal");
+  const handleMoodSelect = (mood: MoodType) => {
+    if (mood === "other") {
+      setSelectedMood("other");
+      return;
     }
+    setSelectedMood(mood);
+    router.push({
+      pathname: "/mission/loading",
+      params: { mood },
+    });
+  };
+
+  const handleOtherMoodSubmit = () => {
+    if (!customMoodText.trim()) return;
+    router.push({
+      pathname: "/mission/loading",
+      params: { mood: "other", customMoodText: customMoodText.trim() },
+    });
   };
 
   const handleResumeMission = () => {
@@ -121,7 +112,7 @@ export default function HomeScreen() {
                       <MaterialCommunityIcons
                         name="compass-outline"
                         size={20}
-                        color="#135bec"
+                        color="#22C55E"
                       />
                     </View>
                     <View className="flex-1">
@@ -146,112 +137,63 @@ export default function HomeScreen() {
 
           {/* Mood check-in */}
           <Card className="mb-6">
-            <Text className="font-playfair-bold text-lg text-gray-900 text-center mb-1">
+            <Text className="font-work-sans-bold text-lg text-gray-900 text-center mb-1">
               How is your spirit today?
             </Text>
             <Text className="font-work-sans text-sm text-gray-500 text-center mb-5">
               Your mood helps us craft your mission
             </Text>
 
-            {generating ? (
-              <View className="items-center py-8">
-                <ActivityIndicator size="large" color="#135bec" />
-                <Text className="font-work-sans text-sm text-gray-500 mt-3">
-                  Crafting your mission...
-                </Text>
+            <View>
+              <View className="flex-row mb-1">
+                {MOODS.slice(0, 3).map((mood) => (
+                  <MoodButton
+                    key={mood.id}
+                    mood={mood}
+                    selected={selectedMood === mood.id}
+                    onPress={() => handleMoodSelect(mood.id)}
+                  />
+                ))}
               </View>
-            ) : (
-              <View>
-                <View className="flex-row mb-1">
-                  {MOODS.slice(0, 2).map((mood) => (
-                    <MoodButton
-                      key={mood.id}
-                      mood={mood}
-                      selected={selectedMood === mood.id}
-                      onPress={() => handleMoodSelect(mood.id)}
-                    />
-                  ))}
-                </View>
-                <View className="flex-row">
-                  {MOODS.slice(2, 4).map((mood) => (
-                    <MoodButton
-                      key={mood.id}
-                      mood={mood}
-                      selected={selectedMood === mood.id}
-                      onPress={() => handleMoodSelect(mood.id)}
-                    />
-                  ))}
-                </View>
+              <View className="flex-row">
+                {MOODS.slice(3, 5).map((mood) => (
+                  <MoodButton
+                    key={mood.id}
+                    mood={mood}
+                    selected={selectedMood === mood.id}
+                    onPress={() => handleMoodSelect(mood.id)}
+                  />
+                ))}
               </View>
-            )}
-          </Card>
-
-          {/* Community needs feed */}
-          <Text className="font-work-sans-semibold text-lg text-gray-900 mb-3">
-            Community Needs
-          </Text>
-          {hungerFeed === null ? (
-            <Card className="mb-6">
-              <View className="items-center py-6">
-                <ActivityIndicator size="small" color="#135bec" />
-                <Text className="font-work-sans text-sm text-gray-500 mt-2">
-                  Loading needs...
-                </Text>
-              </View>
-            </Card>
-          ) : feedError ? (
-            <Card className="mb-6">
-              <Text className="font-work-sans text-sm text-gray-500 text-center">
-                {feedError}
-              </Text>
-            </Card>
-          ) : hungerFeed.length === 0 ? (
-            <Card className="mb-6">
-              <Text className="font-work-sans text-sm text-gray-500 text-center">
-                No needs yet — submit one from the Report tab.
-              </Text>
-            </Card>
-          ) : (
-            <View className="mb-6">
-              {hungerFeed.slice(0, 5).map((need) => {
-                const countLabel =
-                  need.people_needed != null
-                    ? `${need.acceptance_count} of ${need.people_needed} accepted`
-                    : `${need.acceptance_count} accepted`;
-                return (
+              {selectedMood === "other" && (
+                <View className="mt-3">
+                  <TextInput
+                    value={customMoodText}
+                    onChangeText={setCustomMoodText}
+                    placeholder="How are you feeling?"
+                    placeholderTextColor="#9CA3AF"
+                    className="font-work-sans text-sm text-gray-900 bg-white border border-gray-200 rounded-xl px-4 py-3"
+                    maxLength={100}
+                  />
                   <TouchableOpacity
-                    key={need.id}
-                    onPress={() => router.push(`/need/${need.id}`)}
-                    activeOpacity={0.8}
+                    onPress={handleOtherMoodSubmit}
+                    disabled={!customMoodText.trim()}
+                    className={`mt-2 rounded-xl py-3 items-center ${
+                      customMoodText.trim() ? "bg-primary" : "bg-gray-200"
+                    }`}
                   >
-                    <Card className="mb-3">
-                      <Text className="font-work-sans text-gray-900 text-sm">
-                        {need.description}
-                      </Text>
-                      <View className="flex-row items-center mt-2 flex-wrap gap-x-2 gap-y-1">
-                        <MaterialCommunityIcons
-                          name="map-marker-outline"
-                          size={14}
-                          color="#6B7280"
-                        />
-                        <Text className="font-work-sans text-xs text-gray-500">
-                          {need.location}
-                        </Text>
-                        <View className="bg-gray-100 rounded px-2 py-0.5">
-                          <Text className="font-work-sans text-xs text-gray-600 capitalize">
-                            {need.category}
-                          </Text>
-                        </View>
-                      </View>
-                      <Text className="font-work-sans text-xs text-gray-400 mt-1.5">
-                        Submitted by {need.creator_display_name ?? "Someone"} · {countLabel}
-                      </Text>
-                    </Card>
+                    <Text
+                      className={`font-work-sans-semibold text-sm ${
+                        customMoodText.trim() ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Generate Mission
+                    </Text>
                   </TouchableOpacity>
-                );
-              })}
+                </View>
+              )}
             </View>
-          )}
+          </Card>
 
           {/* Quick stats */}
           <Text className="font-work-sans-semibold text-lg text-gray-900 mb-3">

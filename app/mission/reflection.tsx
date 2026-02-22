@@ -21,15 +21,15 @@ export default function MissionReflectionScreen() {
 
   return (
     <LinearGradient
-      colors={["#0A2E76", "#0d1b3e", "#060f24"]}
+      colors={["#166534", "#14532D", "#052e16"]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1 justify-center items-center px-6">
         {/* Question */}
-        <Text className="font-playfair-bold-italic text-3xl text-white text-center leading-10 mb-4">
+        <Text className="font-work-sans-bold text-3xl text-white text-center leading-10 mb-4">
           Did doing this{"\n"}make you feel
         </Text>
-        <Text className="font-playfair-bold-italic text-4xl text-gold text-center mb-12">
+        <Text className="font-work-sans-bold text-4xl text-gold text-center mb-12">
           alive?
         </Text>
 

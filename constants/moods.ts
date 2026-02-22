@@ -29,4 +29,11 @@ export const MOODS: Mood[] = [
     color: "#10B981",
     bgColor: "rgba(16, 185, 129, 0.1)",
   },
+  {
+    id: "other",
+    label: "Other",
+    icon: "dots-horizontal",
+    color: "#6B7280",
+    bgColor: "rgba(107, 114, 128, 0.1)",
+  },
 ];

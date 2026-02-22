@@ -10,8 +10,24 @@ import Card from "@/components/ui/Card";
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
-  const { profile } = useUserProfile();
+  const { profile, resetProfile } = useUserProfile();
   const router = useRouter();
+
+  const handleRealign = () => {
+    Alert.alert(
+      "Re-align Your Purpose",
+      "This will take you through the onboarding questions again so we can better understand you.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Let's Go",
+          onPress: async () => {
+            await resetProfile();
+          },
+        },
+      ]
+    );
+  };
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -41,7 +57,7 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <Text className="font-playfair-bold text-2xl text-gray-900 mb-6">
+          <Text className="font-work-sans-bold text-2xl text-gray-900 mb-6">
             Settings
           </Text>
 
@@ -52,7 +68,7 @@ export default function SettingsScreen() {
                 <MaterialCommunityIcons
                   name="account"
                   size={24}
-                  color="#135bec"
+                  color="#22C55E"
                 />
               </View>
               <View className="flex-1">
@@ -86,6 +102,16 @@ export default function SettingsScreen() {
               </View>
             )}
           </Card>
+
+          {/* Re-align purpose */}
+          <Button
+            title="Re-align Your Purpose"
+            variant="primary"
+            onPress={handleRealign}
+            size="md"
+          />
+
+          <View className="h-3" />
 
           {/* Sign out */}
           <Button

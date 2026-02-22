@@ -40,7 +40,7 @@ export default function ActiveMissionScreen() {
           </View>
 
           {/* Mission title */}
-          <Text className="font-merriweather-bold text-2xl text-gray-900 mb-2">
+          <Text className="font-work-sans-bold text-2xl text-gray-900 mb-2">
             {currentMission.title}
           </Text>
           <Text className="font-work-sans text-gray-500 text-sm mb-6">
@@ -54,7 +54,7 @@ export default function ActiveMissionScreen() {
                 <MaterialCommunityIcons
                   name="map-marker-outline"
                   size={20}
-                  color="#135bec"
+                  color="#22C55E"
                 />
               </View>
               <View>
@@ -71,7 +71,7 @@ export default function ActiveMissionScreen() {
                 <MaterialCommunityIcons
                   name="clock-outline"
                   size={20}
-                  color="#135bec"
+                  color="#22C55E"
                 />
               </View>
               <View>
@@ -99,10 +99,10 @@ export default function ActiveMissionScreen() {
               <MaterialCommunityIcons
                 name="lightbulb-outline"
                 size={20}
-                color="#D4AF37"
+                color="#166534"
                 style={{ marginTop: 2, marginRight: 10 }}
               />
-              <Text className="font-merriweather text-sm text-gray-600 flex-1 leading-5 italic">
+              <Text className="font-work-sans text-sm text-gray-600 flex-1 leading-5 italic">
                 "The place God calls you to is the place where your deep
                 gladness and the world's deep hunger meet."
               </Text>
